@@ -1,33 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   thread.h                                           :+:      :+:    :+:   */
+/*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 12:48:27 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 16:18:02 by tbasak           ###   ########.fr       */
+/*   Updated: 2025/08/05 18:33:17 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef THREAD_H
-# define THREAD_H
+#ifndef PHILO_H
+# define PHILO_H
 
-# include "t_thread.h"
+# include "t_philo.h"
 
-t_thread
-new_thread(void *(*task)(void *), void *arg);
-
-void
-drop_thread(t_thread thread);
+t_philo
+new_philo(t_sim *sim, int id);
 
 void
-thread_destroy(t_thread *self);
-
-void
-thread_join(t_thread *self);
-
-void
-thread_detach(t_thread *self);
+philo_start(t_philo *self);
 
 #endif

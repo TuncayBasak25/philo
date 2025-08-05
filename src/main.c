@@ -6,15 +6,18 @@
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:15:37 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 13:30:51 by tbasak           ###   ########.fr       */
+/*   Updated: 2025/08/05 18:10:16 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pthread.h>
+#include "sim.h"
 
 int	main(void)
 {
-	pthread_t	th;
+	t_sim	sim;
 
-	th = pthread_create()
+	sim = new_sim(10, 100, 100, 100);
+	sim_start(&sim);
+	drop_sim(sim);
+	return (0);
 }

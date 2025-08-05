@@ -1,33 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   thread.h                                           :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/05 12:48:27 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 16:18:02 by tbasak           ###   ########.fr       */
+/*   Created: 2025/08/05 17:05:47 by tbasak            #+#    #+#             */
+/*   Updated: 2025/08/05 17:08:17 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef THREAD_H
-# define THREAD_H
+#include <sys/time.h>
 
-# include "t_thread.h"
+int	time(void)
+{
+	struct timeval	tv;
 
-t_thread
-new_thread(void *(*task)(void *), void *arg);
-
-void
-drop_thread(t_thread thread);
-
-void
-thread_destroy(t_thread *self);
-
-void
-thread_join(t_thread *self);
-
-void
-thread_detach(t_thread *self);
-
-#endif
+	return (gettimeofday(&tv, 0));
+}

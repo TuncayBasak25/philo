@@ -1,33 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   thread.h                                           :+:      :+:    :+:   */
+/*   sim.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 12:48:27 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 16:18:02 by tbasak           ###   ########.fr       */
+/*   Updated: 2025/08/05 19:09:23 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef THREAD_H
-# define THREAD_H
+#ifndef SIM_H
+# define SIM_H
 
-# include "t_thread.h"
+# define _DEFAULT_SOURCE
 
-t_thread
-new_thread(void *(*task)(void *), void *arg);
+# include "t_sim.h"
+# include "t_philo_action.h"
 
-void
-drop_thread(t_thread thread);
-
-void
-thread_destroy(t_thread *self);
+t_sim
+new_sim(int philo_count, int tt_die, int tt_eat, int tt_sleep);
 
 void
-thread_join(t_thread *self);
+drop_sim(t_sim sim);
 
 void
-thread_detach(t_thread *self);
+sim_destroy(t_sim *self);
+
+void
+sim_log(t_sim *self, int philo_id, t_philo_action action);
+
+void
+sim_start(t_sim *self);
+
+int	time(void);
 
 #endif

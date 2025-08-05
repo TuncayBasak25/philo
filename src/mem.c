@@ -1,33 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   thread.h                                           :+:      :+:    :+:   */
+/*   mem.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/05 12:48:27 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 16:18:02 by tbasak           ###   ########.fr       */
+/*   Created: 2025/08/05 17:16:33 by tbasak            #+#    #+#             */
+/*   Updated: 2025/08/05 17:18:43 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef THREAD_H
-# define THREAD_H
+#include <stdlib.h>
+#include <string.h>
 
-# include "t_thread.h"
+void	*mem_alloc(int size)
+{
+	void	*ptr;
 
-t_thread
-new_thread(void *(*task)(void *), void *arg);
+	ptr = malloc(size);
+	if (ptr)
+		memset(ptr, 0, size);
+	return (ptr);
+}
 
-void
-drop_thread(t_thread thread);
-
-void
-thread_destroy(t_thread *self);
-
-void
-thread_join(t_thread *self);
-
-void
-thread_detach(t_thread *self);
-
-#endif
+void	*mem_free(void *ptr)
+{
+	if (ptr)
+		free(ptr);
+	return (NULL);
+}

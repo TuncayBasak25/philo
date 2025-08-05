@@ -1,33 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   thread.h                                           :+:      :+:    :+:   */
+/*   t_sim.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 12:48:27 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 16:18:02 by tbasak           ###   ########.fr       */
+/*   Updated: 2025/08/05 18:32:06 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef THREAD_H
-# define THREAD_H
+#ifndef T_SIM_H
+# define T_SIM_H
 
-# include "t_thread.h"
+# include "t_mutex.h"
 
-t_thread
-new_thread(void *(*task)(void *), void *arg);
-
-void
-drop_thread(t_thread thread);
-
-void
-thread_destroy(t_thread *self);
-
-void
-thread_join(t_thread *self);
-
-void
-thread_detach(t_thread *self);
+typedef struct s_sim
+{
+	int				philo_count;
+	int				tt_die;
+	int				tt_sleep;
+	int				tt_eat;
+	int				eat_max;
+	int				start_time;
+	int				stop;
+	t_mutex			log;
+	t_mutex			*forks;
+	struct s_philo	*philos;
+}	t_sim;
 
 #endif
