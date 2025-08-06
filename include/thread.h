@@ -5,29 +5,28 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/05 12:48:27 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 16:18:02 by tbasak           ###   ########.fr       */
+/*   Created: 2025/08/05 20:18:58 by tbasak            #+#    #+#             */
+/*   Updated: 2025/08/06 22:34:23 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef THREAD_H
 # define THREAD_H
 
-# include "t_thread.h"
+# include "util.h"
+
+typedef struct s_thread
+{
+	t_bool	is_valid;
+	t_u8	data[16];
+}	t_thread;
+
+typedef void	*(*t_fn_task)(void *);
 
 t_thread
-new_thread(void *(*task)(void *), void *arg);
-
-void
-drop_thread(t_thread thread);
-
-void
-thread_destroy(t_thread *self);
+new_thread(t_fn_task task, void *arg);
 
 void
 thread_join(t_thread *self);
-
-void
-thread_detach(t_thread *self);
 
 #endif

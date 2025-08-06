@@ -6,76 +6,85 @@
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 18:19:44 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/05 19:20:13 by tbasak           ###   ########.fr       */
+/*   Updated: 2025/08/07 01:05:30 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sim.h"
 #include "philo.h"
-#include "thread.h"
-#include "mutex.h"
 #include <unistd.h>
+#include <stdio.h>
 
-static void	take_forks(t_sim *sim, t_philo *philo)
+static t_bool	is_dead(t_philo *philo)
 {
-	if (philo->id % 2 == 0)
-	{
-		mutex_lock(philo->left);
-		sim_log(sim, philo->id, PHILO_FORK);
-		mutex_lock(philo->right);
-		sim_log(sim, philo->id, PHILO_FORK);
-	}
-	else
-	{
-		mutex_lock(philo->right);
-		sim_log(sim, philo->id, PHILO_FORK);
-		mutex_lock(philo->left);
-		sim_log(sim, philo->id, PHILO_FORK);
-	}
+	return (time_ms() - philo->last_meal >= philo->tt_die);
 }
 
-static void	*task(t_philo *philo)
+static void	log_philo(t_philo *philo, t_philo_action action)
 {
-	t_sim	*sim;
-	int		think_start;
+	t_usize	stamp;
 
-	sim = philo->sim;
-	while (!sim->stop && sim->eat_max > -1 && philo->eat_count < sim->eat_max)
+	mutex_lock(philo->log_mutex);
+	if (!sync_bool_get(philo->running))
+		return (mutex_unlock(philo->log_mutex));
+	stamp = time_ms() - philo->start_time;
+	if (action == PHILO_DIE)
 	{
-		take_forks(sim, philo);
-		sim_log(sim, philo->id, PHILO_EAT);
-		usleep(sim->tt_eat);
-		mutex_unlock(philo->left);
-		mutex_unlock(philo->right);
-		sim_log(sim, philo->id, PHILO_SLEEP);
-		usleep(sim->tt_sleep);
-		sim_log(sim, philo->id, PHILO_THINK);
-		think_start = time();
-		while (time() - think_start < sim->tt_die)
+		printf("%llu %llu DIED\n", stamp, philo->id);
+		sync_bool_set(philo->running, FALSE);
+	}
+	else if (action == PHILO_FORK)
+		printf("%llu %llu HAS TAKEN A FORK\n", stamp, philo->id);
+	else if (action == PHILO_EAT)
+		printf("%llu %llu IS EATING\n", stamp, philo->id);
+	else if (action == PHILO_SLEEP)
+		printf("%llu %llu IS SLEEPING\n", stamp, philo->id);
+	else if (action == PHILO_THINK)
+		printf("%llu %llu IS THINKING\n", stamp, philo->id);
+	mutex_unlock(philo->log_mutex);
+}
+
+static t_result	take_forks(t_philo *philo)
+{
+	while (TRUE)
+	{
+		if (!sync_bool_get(philo->running))
+			return (FAIL);
+		if (is_dead(philo))
+			return (log_philo(philo, PHILO_DIE), FAIL);
+		if (sync_bool_cas(philo->left, TRUE, FALSE) == OK)
+			break ;
+		usleep(1);
+	}
+	log_philo(philo, PHILO_FORK);
+	while (TRUE)
+	{
+		if (!sync_bool_get(philo->running))
+			return (FAIL);
+		if (is_dead(philo))
+			return (log_philo(philo, PHILO_DIE), FAIL);
+		if (sync_bool_cas(philo->right, TRUE, FALSE) == OK)
+			break ;
+		usleep(1);
+	}
+	log_philo(philo, PHILO_FORK);
+	return (OK);
+}
+
+void	*philo_handler(t_philo *philo)
+{
+	while (!sync_bool_get(philo->running))
+		usleep(1);
+	philo->last_meal = philo->start_time;
+	while (philo->eat_count++ < philo->eat_max && take_forks(philo) == OK)
+	{
+		log_philo(philo, PHILO_EAT);
+		usleep(philo->tt_eat * 1000);
+		sync_bool_set(philo->left, TRUE);
+		sync_bool_set(philo->right, TRUE);
+		philo->last_meal = time_ms();
+		log_philo(philo, PHILO_SLEEP);
+		usleep(philo->tt_sleep * 1000);
+		log_philo(philo, PHILO_THINK);
 	}
 	return (0);
-}
-
-t_philo	new_philo(t_sim *sim, int id)
-{
-	t_philo	philo;
-
-	philo.id = id;
-	philo.sim = sim;
-	philo.eat_count = 0;
-	philo.left = &sim->forks[id - 1];
-	if (id == sim->philo_count)
-		philo.right = &sim->forks[0];
-	else
-		philo.right = &sim->forks[id];
-	return (philo);
-}
-
-void	philo_start(t_philo *self)
-{
-	if (self->sim->stop)
-		return ;
-	self->thread = new_thread(task, self);
-	if (!self->thread.pthread)
-		self->sim->stop;
 }
