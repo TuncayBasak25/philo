@@ -6,7 +6,7 @@
 /*   By: tbasak <tbasak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:15:37 by tbasak            #+#    #+#             */
-/*   Updated: 2025/08/07 00:58:01 by tbasak           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:57:16 by tbasak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,24 +58,24 @@ static void	drop_sim(t_sim sim, t_usize philo_count)
 
 static void	run_philo(t_sim *sim, t_params params, t_usize id)
 {
-	t_philo	philo;
+	t_philo	*philo;
 
-	philo.id = id;
-	philo.eat_count = 0;
-	philo.tt_die = params.tt_die;
-	philo.tt_eat = params.tt_eat;
-	philo.tt_sleep = params.tt_sleep;
-	philo.eat_max = params.eat_max;
-	philo.running = &sim->running;
-	philo.log_mutex = &sim->log_mutex;
-	philo.left = &sim->forks[id - 1];
+	philo = &sim->philos[id - 1];
+	philo->id = id;
+	philo->eat_count = 0;
+	philo->tt_die = params.tt_die;
+	philo->tt_eat = params.tt_eat;
+	philo->tt_sleep = params.tt_sleep;
+	philo->eat_max = params.eat_max;
+	philo->running = &sim->running;
+	philo->log_mutex = &sim->log_mutex;
+	philo->left = &sim->forks[id - 1];
 	if (id % 2)
-		philo.left = &sim->forks[id % params.philo_count];
-	philo.right = &sim->forks[id % params.philo_count];
+		philo->left = &sim->forks[id % params.philo_count];
+	philo->right = &sim->forks[id % params.philo_count];
 	if (id % 2)
-		philo.right = &sim->forks[id - 1];
-	sim->philos[id - 1] = philo;
-	philo.thread = new_thread((t_fn_task)philo_handler, &sim->philos[id - 1]);
+		philo->right = &sim->forks[id - 1];
+	philo->thread = new_thread((t_fn_task)philo_handler, &sim->philos[id - 1]);
 }
 
 static void	run_sim(t_usize philo_count, t_params params)
